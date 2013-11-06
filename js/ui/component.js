@@ -2,6 +2,7 @@ goog.provide('ian.ui.Component');
 
 goog.require('goog.events.EventTarget');
 goog.require('goog.string');
+goog.require('ian.ui.ComponentState');
 
 
 /**
@@ -39,9 +40,9 @@ ian.ui.Component = function () {
   this.$scope = {};
 
   /**
-   * @type {!Object.<string, boolean>}
+   * @type {!ian.ui.ComponentState}
    */
-  this.$state = {};
+  this.$state = new ian.ui.ComponentState();
 
   /**
    * @type {!Object.<string, !Element>}
@@ -103,7 +104,7 @@ ian.ui.Component.prototype.setScope = function (scope) {
 
 
 /**
- * @param {string|!Object} key A state key.
+ * @param {string|!ian.ui.ComponentState} key A state key.
  * @param {boolean=} state The new state value.
  */
 ian.ui.Component.prototype.setState = function (key, state) {
@@ -145,6 +146,33 @@ ian.ui.Component.prototype.updateStateClass_ = function (key, state) {
       goog.dom.classes.remove(this.$element, className);
     }
   }
+
+  this.fireStateChangeEvent_();
+};
+
+
+/**
+ * @param {string} key A state key.
+ */
+ian.ui.Component.prototype.toggleState = function (key) {
+  this.$state[key] = !this.$state[key];
+// console.log(key, this.$state[key]);
+
+  this.fireStateChangeEvent_();
+};
+
+
+ian.ui.Component.prototype.fireStateChangeEvent_ = function () {
+  var e = new goog.events.Event('statechange');
+  this.dispatchEvent(e);
+};
+
+
+/**
+ * @return {!ian.ui.ComponentState}
+ */
+ian.ui.Component.prototype.getState = function () {
+  return this.$state;
 };
 
 
