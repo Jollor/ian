@@ -45,7 +45,7 @@ ian.ui.Component = function () {
   this.$state = new ian.ui.ComponentState();
 
   /**
-   * @type {!Object.<string, !Element>}
+   * @type {!Object.<string, !ian.ui.Component>}
    */
   this.$children = {};
 
@@ -126,14 +126,6 @@ ian.ui.Component.prototype.setState = function (key, state) {
 
 /**
  * @param {string} key A state key.
- */
-ian.ui.Component.prototype.toggleState = function (key) {
-  this.setState(key, !this.$state[key]);
-};
-
-
-/**
- * @param {string} key A state key.
  * @param {boolean} state The new state value.
  */
 ian.ui.Component.prototype.updateStateClass_ = function (key, state) {
@@ -178,7 +170,7 @@ ian.ui.Component.prototype.getState = function () {
 
 /**
  * @param {string} key The child key.
- * @param {!Element} child The new child.
+ * @param {!ian.ui.Component} child The new child.
  */
 ian.ui.Component.prototype.addChild = function (key, child) {
   this.$children[key] = child;

@@ -88,18 +88,22 @@ ian.ui.Compiler.prototype.getComponentDefinitions_ = function () {
 };
 
 
-ian.ui.Compiler.prototype.compileSubTree_ = function (root) {
+/**
+ * @param {!Document|Node|Element} root
+ * @param {ian.ui.Component=} parent
+ */
+ian.ui.Compiler.prototype.compileSubTree_ = function (root, parent) {
   var component = null;
 
   if (goog.dom.isElement(root) && !root.hasAttribute('data-component')) {
-    component = this.compileElement_(root);
+    component = this.compileElement_(/** @type {!Element} */ (root), parent);
     if (component) {
       root.setAttribute('data-component', '');
     }
   }
 
   if (!component || !component.$$invalidated) {
-    this.compileChildren_(root);
+    this.compileChildren_(/** @type {!Element} */ (root), component);
   }
 
   if (component) {
@@ -125,7 +129,7 @@ ian.ui.Compiler.prototype.compileSubTree_ = function (root) {
         root = new_element;
 
       } else {
-        component.decorate(root);
+        component.decorate(/** @type {!Element} */ (root));
         this.scope_stack_.shift();
       }
     } while (component.isInvalidated());
@@ -135,21 +139,25 @@ ian.ui.Compiler.prototype.compileSubTree_ = function (root) {
 
 /**
  * @param {!Document|Element} root
+ * @param {ian.ui.Component=} parent
  */
-ian.ui.Compiler.prototype.compileChildren_ = function (root) {
+ian.ui.Compiler.prototype.compileChildren_ = function (root, parent) {
   if (root.nodeType === goog.dom.NodeType.DOCUMENT) {
     root = root.documentElement;
   }
 
-  goog.array.forEach(root.children, this.compileSubTree_, this);
+  goog.array.forEach(root.children, function (child) {
+    this.compileSubTree_(child, parent);
+  }, this);
 };
 
 
 /**
  * @param {!Element} element The element to compile.
+ * @param {ian.ui.Component=} parent A parent component if any.
  * @return {ian.ui.Component} component A newly created component.
  */
-ian.ui.Compiler.prototype.compileElement_ = function (element) {
+ian.ui.Compiler.prototype.compileElement_ = function (element, parent) {
   var component = null;
 
   var class_name_attr = element.className;
@@ -162,6 +170,10 @@ ian.ui.Compiler.prototype.compileElement_ = function (element) {
       var class_names = goog.string.trim(element.className).split(/\s+/);
       var state = this.getStateFromClasses(base_class_name, class_names);
       component.setState(state);
+
+      if (parent) {
+        parent.addChild(base_class_name, component);
+      }
     }
   }
 
