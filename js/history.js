@@ -74,7 +74,7 @@ ian.History.prototype.handleHashChange_ = function (e) {
  */
 ian.History.prototype.emitState_ = function (state) {
   var e = new ian.History.PopStateEvent(state);
-  goog.events.dispatchEvent(this.$window, e);
+  goog.events.dispatchEvent(/** @type {goog.events.Listenable} */ (this.$window), e);
 };
 
 
