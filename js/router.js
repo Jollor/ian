@@ -171,7 +171,7 @@ ian.Router.prototype.handleClick_ = function (e) {
     do {
       href = target.getAttribute('href');
       target = target.parentNode;
-    } while (!href && target.nodeType === 1);
+    } while (!href && target && target.nodeType === 1);
 
     var path;
     if (!href) {
