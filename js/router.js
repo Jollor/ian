@@ -168,10 +168,16 @@ ian.Router.prototype.handleClick_ = function (e) {
   var target = e.target;
   if (target) {
     var href;
+    var target_attr;
     do {
       href = target.getAttribute('href');
+      target_attr = target.getAttribute('target');
       target = target.parentNode;
     } while (!href && target && target.nodeType === 1);
+
+    if (target_attr == '_blank') {
+      return;
+    }
 
     var path;
     if (!href) {
