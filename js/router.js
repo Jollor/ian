@@ -97,19 +97,35 @@ ian.Router.prototype.parseRoutes_ = function (routes) {
     var placeholders = pattern.match(/\{[a-z-]+\}/g) || [];
     var rx_source = pattern;
     var param_keys = [];
+    var reload = true;
+
+    if (rx_source[0] === '!') {
+        reload = false;
+        rx_source = rx_source.substr(1, rx_source.length - 1);
+    }
 
     for (var i = 0; i < placeholders.length; ++i) {
       var placeholder = placeholders[i];
       rx_source = rx_source.replace(placeholder, '([^/]+)');
       param_keys.push(placeholder.substr(1, placeholder.length - 2));
     }
-    var rx = new RegExp('^' + rx_source + '$');
+
+    rx_source = '^' + rx_source;
+
+    if (rx_source[rx_source.length - 2] === '/' && rx_source[rx_source.length - 1] === '*') {
+      rx_source = rx_source.substr(0, rx_source.length - 1) + '.*';
+    }
+
+    var rx = new RegExp(rx_source + '$');
+
+    console.log(rx)
 
     list.push({
       target: target,
       param_keys: param_keys,
       pattern: pattern,
-      rx: rx
+      rx: rx,
+      reload: reload
     });
   });
 
@@ -349,6 +365,7 @@ ian.Router.prototype.createStateForPath_ = function (path) {
 
       return {
         path: path,
+        route: route,
         target: route.target,
         params: params
       };
@@ -376,6 +393,10 @@ ian.Router.prototype.pushState = function (state) {
 ian.Router.prototype.setState = function (state) {
   this.previous_state = this.state;
   this.state = state;
+
+  if (this.previous_state && this.previous_state.route == this.state.route && this.state.route.reload === false && goog.object.equals(this.previous_state.params, this.state.params))
+      return;
+
   var e = new ian.Router.StateChangeEvent(state);
 
   this.dispatchEvent(e);
