@@ -253,7 +253,7 @@ ian.Router.prototype.redirectToPath = function (path) {
  * @param {!Object.<string, (string|number|boolean)>=} params Target params.
  */
 ian.Router.prototype.navigate = function (target, params) {
-  var path = this.getPathByTargetAndParams(target, params);
+  var path = this.getPathByTargetAndParams(target, params).replace('*', '');
 
   // TODO: Optimize so that the route is not resolved twice.
   var self = this;
