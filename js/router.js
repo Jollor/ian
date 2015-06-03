@@ -118,8 +118,6 @@ ian.Router.prototype.parseRoutes_ = function (routes) {
 
     var rx = new RegExp(rx_source + '$');
 
-    console.log(rx)
-
     list.push({
       target: target,
       param_keys: param_keys,
