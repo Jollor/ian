@@ -84,6 +84,7 @@ ian.Router.prototype.init = function (routes) {
   }
 
   this.emitCurrentState_();
+  this.$history.replaceState(this.state, '');
 };
 
 
