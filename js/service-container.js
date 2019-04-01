@@ -101,8 +101,9 @@ ian.ServiceContainer.prototype.getDependencyList = function (Constructor) {
   }
 
   var constructor_source = Constructor.toString();
-  var arg_list = constructor_source.match(/\((.*?)\)/)[1];
-  var args = arg_list ? arg_list.split(', ') : [];
+  var arg_list = constructor_source.match(/\(((?:.|\s)*?)\)/m)[1];
+  var args = arg_list ? arg_list.split(',') : [];
+  args = args.map(arg => arg.trim());
 
   return args;
 };
